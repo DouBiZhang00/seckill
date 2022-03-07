@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>订单详情</title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css"/>
+    <!--    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css" />-->
+
+</head>
+<body>
+<h4 id="user"></h4>
+
+<div class="panel panel-default">
+    <div class="panel-heading">秒杀订单详情</div>
+    <table class="table" id="order">
+        <tr>
+            <td>商品名称</td>
+            <td id="goodsName"></td>
+        </tr>
+        <tr>
+            <td>商品图片</td>
+            <td><img id="goodsImg" style="width: 20%" /></td>
+        </tr>
+        <tr>
+            <td>订单价格</td>
+            <td colspan="3" id="goodsPrice"></td>
+        </tr>
+        <tr>
+            <td>下单时间</td>
+            <td colspan="3" id="createDate"></td>
+        </tr>
+        <tr>
+            <td>订单状态</td>
+            <td>
+<!--                <span if="${order.status eq 0}">未支付</span>-->
+<!--                <span if="${order.status eq 1}">待发货</span>-->
+<!--                <span if="${order.status eq 2}">已发货</span>-->
+<!--                <span if="${order.status eq 3}">已收货</span>-->
+<!--                <span if="${order.status eq 4}">已退款</span>-->
+<!--                <span if="${order.status eq 5}">已完成</span>-->
+                <span id="status">未支付</span>
+            </td>
+            <td>
+                <button class="btn btn-primary btn-block" type="submit" id="payButton">立即支付</button>
+            </td>
+        </tr>
+        <tr>
+            <td>收货人 </td>
+            <td colspan="3">XXX 王先生</td>
+        </tr>
+        <tr>
+            <td>收货地址 </td>
+            <td colspan="3">广东省广州市XXXXXXXXX 301号</td>
+        </tr>
+    </table>
+</div>
+<button onclick="testLayer()"></button>
+
+<script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/layer/layer.js"></script>
+<script type="text/javascript" src="/js/common.js"></script>
+
+<script>
+    $(function (){
+        getDetail();
+    });
+    function getDetail() {
+        $.get({
+            url: '/order/detail',
+            data: {
+                orderId: g_getQueryString("orderId")
+            },
+            success: function (data) {
+                /*
+                RespBean = (code, message, obj)
+                RespBean.obj = OrderDetailVo = (user, order, goodsVo)
+                RespBean.obj.goodsVo = GoodsVo =
+                    (seckillPrice, stockCount, startDate, endDate,
+                    goodsName, goodsTitile, goodsImg, goodsDetail, goodsPrice, goodsStock)
+                RespBean.obj.order =
+                    (id, userId, goodsId, deliveryAddrId, goodsName, goodsCount, goodsPrice,
+                    orderChannel, status, createDate, payDate)
+                 */
+                if (data.code == 200) {
+                    var user = data.obj.user;
+                    var order = data.obj.order;
+                    var goodsVo = data.obj.goodsVo;
+                    $("#user").text(user.username);
+                    $("#goodsName").text(goodsVo.goodsName);
+                    $("#goodsImg").attr("src", goodsVo.goodsImg);
+                    $("#goodsPrice").text(order.goodsPrice);
+                    $("#createDate").text(order.createDate);
+                    if (order.status == 0) {
+                        $("#status").text("未支付");
+                    } else if (order.status == 1) {
+                        $("#status").text("待发货");
+                    } else if (order.status == 2) {
+                        $("#status").text("已发货");
+                    } else if (order.status == 3) {
+                        $("#status").text("已收获");
+                    } else if (order.status == 4) {
+                        $("#status").text("已退款");
+                    } else if (order.status == 5) {
+                        $("#status").text("已完成");
+                    }
+
+                } else {
+                    layer.alert(data.message);
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

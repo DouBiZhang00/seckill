@@ -1,0 +1,72 @@
+server:
+  port: 8081
+spring:
+  # 静态资源添加缓存, 大大减小数据传输量
+  resources:
+    add-mappings: true
+    cache:
+      cachecontrol:
+        max-age: 3600
+    chain:
+      # 启用资源链缓存
+      cache: true
+      # 启用资源链
+      enabled: true
+      compressed: true
+      html-application-cache: true
+    static-locations: classpath:/static/
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/seckill?useSSL=false&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    username: root
+    password: 300074
+  thymeleaf:
+    cache: false  # 热部署
+
+  redis:
+    # 服务器地址
+    host: localhost
+    port: 6379
+    password: 300074
+    # 默认数据库(redis一共有16个)
+    database: 0
+    timeout: 10000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 10000ms
+        # 最大空闲连接数，默认8; 最小空闲连接数，默认0
+        max-idle: 200
+        min-idle: 5
+
+  rabbitmq:
+    host: localhost
+    username: admin
+    password: 300074
+    virtual-host: /
+    port: 5672
+    listener:
+      simple:
+        # 消费者最小/最大数量
+        concurrency: 10
+        max-concurrency: 10
+        # 限制消费者每次只能处理一条消息
+        prefetch: 1
+        # 被拒绝时是否重新进入队列(template配置)
+        default-requeue-rejected: true
+    template:
+      retry:
+        # 重试模式，默认为false
+        enabled: true
+        initial-interval: 1000ms
+        # 重试最大次数
+        max-attempts: 3
+        max-interval: 10000ms
+        multiplier: 1.0
+
+
+mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
